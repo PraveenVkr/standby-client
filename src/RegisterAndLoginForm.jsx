@@ -90,7 +90,7 @@ export default function RegisterAndLoginForm() {
           </div>
         </form>
       </div>
-      <footer className="fixed bottom-0 w-full flex justify-center bg-gray-700 text-white">
+      <footer className="fixed bottom-0 w-full flex justify-center bg-gray-800 text-white">
         Made with 💙
       </footer>
     </div>
