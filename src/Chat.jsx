@@ -81,6 +81,7 @@ export default function Chat() {
           sender: id,
           recipient: selectedUserId,
           _id: Date.now(),
+          createdAt: Date.now(),
         },
       ]);
     }
@@ -228,8 +229,26 @@ export default function Chat() {
                         </div>
                       )}
                     </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: "600",
+                        fontFamily: "Helvetica,sans-serif",
+                      }}
+                      className="text-gray-400  mx-1.5 -mt-1 mb-1.5"
+                    >
+                      {new Date(message.createdAt).toLocaleTimeString([], {
+                        // year: "2-digit",
+                        // month: "2-digit",
+                        // day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </div>
                   </div>
                 ))}
+
                 <div ref={divUnderMessages}></div>
               </div>
             </div>
