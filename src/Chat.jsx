@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { UserContext } from "./UserContext.jsx";
 import { uniqBy } from "lodash";
@@ -8,7 +7,6 @@ import Contact from "./Contact";
 import { FaRegUserCircle } from "react-icons/fa";
 import { RiLogoutBoxRFill } from "react-icons/ri";
 import { LuSendHorizonal } from "react-icons/lu";
-import { GrAttachment } from "react-icons/gr";
 import { wsUrl } from "./utils/config.js";
 
 export default function Chat() {
@@ -60,30 +58,32 @@ export default function Chat() {
     });
   }
   function sendMessage(ev, file = null) {
-    if (ev) ev.preventDefault();
-    ws.send(
-      JSON.stringify({
-        recipient: selectedUserId,
-        text: newMessageText,
-        file,
-      })
-    );
-    if (file) {
-      axios.get("/messages/" + selectedUserId).then((res) => {
-        setMessages(res.data);
-      });
-    } else {
-      setNewMessageText("");
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: newMessageText,
-          sender: id,
+    if (newMessageText !== "" || file !== null) {
+      if (ev) ev.preventDefault();
+      ws.send(
+        JSON.stringify({
           recipient: selectedUserId,
-          _id: Date.now(),
-          createdAt: Date.now(),
-        },
-      ]);
+          text: newMessageText,
+          file,
+        })
+      );
+      if (file) {
+        axios.get("/messages/" + selectedUserId).then((res) => {
+          setMessages(res.data);
+        });
+      } else {
+        setNewMessageText("");
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: newMessageText,
+            sender: id,
+            recipient: selectedUserId,
+            _id: Date.now(),
+            createdAt: Date.now(),
+          },
+        ]);
+      }
     }
   }
   function sendFile(ev) {
@@ -132,7 +132,7 @@ export default function Chat() {
 
   return (
     <div className="flex h-screen">
-      <div className="bg-white w-1/3 flex flex-col">
+      <div className="bg-white w-1/3 flex flex-col ">
         <div className="flex-grow">
           <Logo />
           {Object.keys(onlinePeopleExclOurUser).map((userId) => (
@@ -173,11 +173,14 @@ export default function Chat() {
           </button>
         </div>
       </div>
-      <div className="flex flex-col bg-blue-50 w-2/3 p-2">
+      <div className="flex flex-col bg-blue-50 w-2/3 p-2 bg-[url('./assets/bg2.jpeg')]  bg-center bg-cover">
         <div className="flex-grow">
           {!selectedUserId && (
-            <div className="flex h-full flex-grow items-center justify-center">
-              <div className="text-gray-300">
+            <div
+              className="flex h-full flex-grow items-center justify-center
+            "
+            >
+              <div className="text-gray-400">
                 &larr; Select a person from the sidebar
               </div>
             </div>
@@ -196,8 +199,8 @@ export default function Chat() {
                       className={
                         "text-left inline-block p-2 my-2 rounded-md text-sm " +
                         (message.sender === id
-                          ? "bg-blue-500 text-white"
-                          : "bg-white text-gray-500")
+                          ? "bg-blue-700 text-white"
+                          : "bg-red-600 text-black")
                       }
                     >
                       {message.text}
@@ -205,7 +208,7 @@ export default function Chat() {
                         <div className="">
                           <a
                             target="_blank"
-                            className="flex items-center gap-1 border-b"
+                            className="flex items-center gap-1 border-b border-red-800"
                             href={
                               axios.defaults.baseURL +
                               "/uploads/" +
@@ -235,7 +238,12 @@ export default function Chat() {
                         fontWeight: "600",
                         fontFamily: "Helvetica,sans-serif",
                       }}
-                      className="text-gray-400  mx-1.5 -mt-1 mb-1.5"
+                      className={
+                        "mx-1.5 -mt-1 mb-1.5" +
+                        (message.sender === id
+                          ? " text-gray-200"
+                          : " text-gray-100")
+                      }
                     >
                       {new Date(message.createdAt).toLocaleTimeString([], {
                         // year: "2-digit",
@@ -255,36 +263,41 @@ export default function Chat() {
           )}
         </div>
         {!!selectedUserId && (
-          <form className="flex gap-2" onSubmit={sendMessage}>
-            <input
-              type="text"
-              value={newMessageText}
-              onChange={(ev) => setNewMessageText(ev.target.value)}
-              placeholder="Type your message here"
-              className="bg-white flex-grow border rounded-sm p-2"
-            />
-            <label className="bg-blue-200 p-2 text-gray-600 cursor-pointer rounded-sm border border-blue-200">
-              <input type="file" className="hidden" onChange={sendFile} />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-6 h-6"
+          <div className="-mx-1 ">
+            <form className="flex gap-2 -mb-1" onSubmit={sendMessage}>
+              <input
+                type="text"
+                value={newMessageText}
+                onChange={(ev) => {
+                  setNewMessageText(ev.target.value);
+                }}
+                placeholder="Type your message here"
+                className="bg-white flex-grow border
+                rounded-sm p-2"
+              />
+              <label className="bg-blue-300 p-2 text-gray-600 cursor-pointer rounded-sm border border-blue-300">
+                <input type="file" className="hidden" onChange={sendFile} />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </label>
+              <button
+                type="submit"
+                className="bg-blue-500 py-1 px-2 text-white rounded-sm"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </label>
-            <button
-              type="submit"
-              className="bg-blue-500 py-1 px-2 text-white rounded-sm"
-            >
-              <LuSendHorizonal className="size-6" />
-            </button>
-          </form>
+                <LuSendHorizonal className="size-6" />
+              </button>
+            </form>{" "}
+          </div>
         )}
       </div>
     </div>
